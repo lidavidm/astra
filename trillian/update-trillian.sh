@@ -4,12 +4,13 @@
 set -e
 
 COMPOSE_DIR=$(pwd)
+GOPATH=$(go env GOPATH)
 
 # Fetch Trillian and its dependencies
-# go get -d -v -u github.com/google/trillian
-# cd $GOPATH/src/github.com/google/trillian
-# go get -d -v -t ./...
-# CGO_ENABLED=0 GOOS=linux go build ./...
+go get -d -v -u github.com/google/trillian
+cd $GOPATH/src/github.com/google/trillian
+go get -d -v -t ./...
+CGO_ENABLED=0 GOOS=linux go build ./...
 
 cd $GOPATH/src/github.com/google/trillian
 cd examples/ct/ct_server
