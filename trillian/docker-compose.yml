@@ -9,6 +9,17 @@ services:
     image: db:db
     networks:
       - trillian
+  log_signer:
+    build: log_signer
+    image: log_signer:log_signer
+    networks:
+      - trillian
+    ports:
+      - 8091
+    volumes:
+      - ./log_signer/config:/config
+    depends_on:
+      - db
   log_server:
     build: log_server
     image: log_server:log_server
@@ -31,4 +42,5 @@ services:
     volumes:
       - ./ct_server/config:/config
     depends_on:
+      - log_signer
       - log_server
