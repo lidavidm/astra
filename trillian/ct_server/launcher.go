@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strconv"
+	"strings"
 )
 
 // "-log_config": "/config/config.json",
@@ -48,13 +50,17 @@ func main() {
 			"-admin_server", logServerAddr,
 			"-pem_key_path", "/config/privkey.pem",
 			"-pem_key_password", "towel",
+			"-signature_algorithm", "ECDSA",
 		}...)
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Fatal("Could not create new tree", string(output), err)
 		}
 
-		logID := string(output)
+		logID, err := strconv.Atoi(strings.TrimSpace(string(output)))
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		// Read in the template config and have everyone use our config
 		var template []map[string]interface{}
@@ -75,15 +81,18 @@ func main() {
 		if err := ioutil.WriteFile(GENERATED_CONFIG_PATH, data, os.ModePerm); err != nil {
 			log.Fatal("Could not write new config", err)
 		}
+		log.Println(string(data))
 	}
 
 	// Launch the trampoline, with the config parameter
 	cmd := exec.Command("/trampoline", []string{
 		"--target", "/main",
 		"--config", "/config/ct.json",
+		"--",
 		"--log_config", GENERATED_CONFIG_PATH,
 	}...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Run()
+	// TODO: also pass on other cli arguments
 }
