@@ -31,8 +31,15 @@ cd $GOPATH/src/github.com/google/trillian
 cd server/trillian_log_server
 CGO_ENABLED=0 GOOS=linux go build -v -a -installsuffix cgo -o $COMPOSE_DIR/log_server/main .
 
+cd $GOPATH/src/github.com/google/trillian
+cd cmd/createtree
+CGO_ENABLED=0 GOOS=linux go build -v -a -installsuffix cgo -o $COMPOSE_DIR/ct_server/createtree .
+
 cd $COMPOSE_DIR/trampoline
 CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o trampoline trampoline.go
 cp trampoline $COMPOSE_DIR/ct_server
 cp trampoline $COMPOSE_DIR/log_signer
 cp trampoline $COMPOSE_DIR/log_server
+
+cd $COMPOSE_DIR/ct_server
+CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o launcher launcher.go

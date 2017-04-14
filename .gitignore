@@ -27,4 +27,5 @@ _testmain.go
 submit/submit
 trillian/*/main
 trillian/*/trampoline
+trillian/*/launcher
 trillian/db/01-init.sql

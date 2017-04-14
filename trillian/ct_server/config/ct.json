@@ -2,7 +2,6 @@
     "-host": "0.0.0.0",
     "-log_dir": "/",
     "-log_rpc_server": "log_server:8090",
-    "-log_config": "/config/config.json",
     "-alsologtostderr": "-alsologtostderr",
     "-v": "100"
 }
