@@ -43,12 +43,13 @@ func main() {
 		}
 
 		// Create the tree, and get the tree ID from the output
+		// TODO: block until log is actually available
 		cmd := exec.Command("/createtree", []string{
 			"-admin_server", logServerAddr,
 			"-pem_key_path", "/config/privkey.pem",
 			"-pem_key_password", "towel",
 		}...)
-		output, err := cmd.Output()
+		output, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Fatal("Could not create new tree", string(output), err)
 		}

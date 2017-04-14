@@ -28,4 +28,5 @@ submit/submit
 trillian/*/main
 trillian/*/trampoline
 trillian/*/launcher
+trillian/*/createtree
 trillian/db/01-init.sql
