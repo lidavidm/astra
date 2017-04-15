@@ -4,10 +4,13 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"math/rand"
+	"net"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // "-log_config": "/config/config.json",
@@ -44,8 +47,18 @@ func main() {
 			log.Fatal("Log server address should be a string, not ", logServerAddrVal)
 		}
 
+		// Block until the log is actually available
+		for {
+			_, err := net.Dial("tcp", logServerAddr)
+			if err != nil {
+				log.Println("Could not contact log server ", err)
+				time.Sleep(time.Duration(1+rand.Intn(10)) * time.Second)
+				continue
+			}
+			break
+		}
+
 		// Create the tree, and get the tree ID from the output
-		// TODO: block until log is actually available
 		cmd := exec.Command("/createtree", []string{
 			"-admin_server", logServerAddr,
 			"-pem_key_path", "/config/privkey.pem",
