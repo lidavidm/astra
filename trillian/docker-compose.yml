@@ -4,8 +4,6 @@ networks:
 services:
   db:
     build: db/
-    ports:
-      - 3306
     image: db:db
     networks:
       - trillian
@@ -15,7 +13,7 @@ services:
     networks:
       - trillian
     ports:
-      - 8091
+      - "8092:8092"
     volumes:
       - ./log_signer/config:/config
     depends_on:
@@ -26,8 +24,7 @@ services:
     networks:
       - trillian
     ports:
-      - 8090
-      - 8091
+      - "8091:8091"
     volumes:
       - ./log_server/config:/config
     depends_on:
@@ -35,7 +32,7 @@ services:
   ct_server:
     build: ct_server
     ports:
-      - 6962
+      - "6962:6962"
     image: ct_server:ct_server
     networks:
       - trillian

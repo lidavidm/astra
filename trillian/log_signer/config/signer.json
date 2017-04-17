@@ -2,5 +2,6 @@
     "-mysql_uri": "root:@tcp(db:3306)/trillian",
     "-log_dir": "/",
     "-alsologtostderr": "-alsologtostderr",
+    "-http_port": "8092",
     "-v": "100"
 }
