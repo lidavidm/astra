@@ -73,8 +73,7 @@ func main() {
 				chain = append(chain, entry.Chain...)
 				sct, err = logDest.AddChain(context.TODO(), chain)
 			case ct.PrecertLogEntryType:
-				chain := []ct.ASN1Cert{ct.ASN1Cert{Data: entry.Leaf.TimestampedEntry.PrecertEntry.TBSCertificate}}
-				chain = append(chain, entry.Chain...)
+				chain := entry.Chain
 				sct, err = logDest.AddPreChain(context.TODO(), chain)
 			}
 			if err != nil {
