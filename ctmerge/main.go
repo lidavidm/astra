@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -33,10 +34,13 @@ func createClient(url string) (*client.LogClient, error) {
 }
 
 func main() {
-	if len(os.Args) != 3 {
-		log.Fatalln("Usage:", os.Args[0], "<source CT server base URL> <dest CT server base URL>")
+	startIdxFlag := flag.Int("start", 0, "The 0-based leaf entry index to start at")
+	flag.Parse()
+	if flag.NArg() != 2 {
+		log.Fatalln("Usage:", os.Args[0], "-start i <source CT server base URL> <dest CT server base URL>")
 	}
-	cturlSrc, cturlDest := os.Args[1], os.Args[2]
+	cturlSrc, cturlDest := flag.Arg(0), flag.Arg(1)
+	startIdx := *startIdxFlag
 
 	logSrc, err := createClient(cturlSrc)
 	if err != nil {
@@ -54,7 +58,7 @@ func main() {
 	lenLogSrc := int64(sth.TreeSize)
 	log.Printf("Attempting to send %v certificates to the destination CT server.\n", lenLogSrc)
 	var i int64
-	for i = 0; i < lenLogSrc; i += 8 {
+	for i = int64(startIdx); i < lenLogSrc; i += 8 {
 		upper := int64(i + 7)
 		if upper > lenLogSrc {
 			upper = lenLogSrc
