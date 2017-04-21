@@ -16,14 +16,15 @@ import (
 // "-log_config": "/config/config.json",
 // , "--target", "/main", "--config", "/config/ct.json"
 
-const TRAMPOLINE_CONFIG_PATH = "/config/ct.json"
-const TEMPLATE_CONFIG_PATH = "/config/config.json"
+const TRAMPOLINE_CONFIG_PATH = "/config/ct_params.json"
+const TEMPLATE_CONFIG_PATH = "/config/ct_config.json"
 const GENERATED_CONFIG_PATH = "/log_config.json"
 
 func main() {
 	// See if we've already generated the config
 	if _, err := os.Stat(GENERATED_CONFIG_PATH); os.IsNotExist(err) {
 		// Generate a new config
+		log.Println("Generating a new configuration")
 
 		// Figure out where the log server is
 		var trampolineArgs map[string]interface{}
@@ -95,12 +96,14 @@ func main() {
 			log.Fatal("Could not write new config", err)
 		}
 		log.Println(string(data))
+	} else {
+		log.Println("Using existing configuration")
 	}
 
 	// Launch the trampoline, with the config parameter
 	cmd := exec.Command("/trampoline", []string{
 		"--target", "/main",
-		"--config", "/config/ct.json",
+		"--config", TRAMPOLINE_CONFIG_PATH,
 		"--",
 		"--log_config", GENERATED_CONFIG_PATH,
 	}...)

@@ -15,7 +15,7 @@ services:
     ports:
       - "8092:8092"
     volumes:
-      - ./log_signer/config:/config
+      - ./config:/config
     depends_on:
       - db
   log_server:
@@ -26,7 +26,7 @@ services:
     ports:
       - "8091:8091"
     volumes:
-      - ./log_server/config:/config
+      - ./config:/config
     depends_on:
       - db
   ct_server:
@@ -37,7 +37,7 @@ services:
     networks:
       - trillian
     volumes:
-      - ./ct_server/config:/config
+      - ./config:/config
     depends_on:
       - log_signer
       - log_server
