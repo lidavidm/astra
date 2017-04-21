@@ -26,16 +26,19 @@ else
     go get -d -t ./...
 fi
 
+compile() {
+    # Allow caller to provide optional arguments
+    CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo ${2-} $1
+}
 
 cd $GOPATH/src/github.com/google/trillian
-# CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo ./...
 
 # Copy over the SQL initialization
 cp storage/mysql/storage.sql $COMPOSE_DIR/db/01-init.sql
 # Prepend a directive to use the appropriate database
 sed -i '1iUSE trillian;' $COMPOSE_DIR/db/01-init.sql
 
-# patch Trillian
+# patch Trillian to bind to 0.0.0.0, not localhost
 cd $GOPATH/src/github.com/google/trillian/server/trillian_log_server
 printf "Patching trillian\n"
 sed -i s/localhost/0.0.0.0/ main.go
@@ -43,11 +46,15 @@ cd $GOPATH/src/github.com/google/trillian/server
 
 printf "Building trillian\n"
 cd $COMPOSE_DIR
-CGO_ENABLED=0 GOOS=linux go install -a -installsuffix cgo github.com/google/trillian/server/trillian_log_server github.com/google/trillian/server/trillian_log_signer github.com/google/trillian/examples/ct/ct_server github.com/google/trillian/cmd/createtree
-mv $GOPATH/bin/createtree ct_server/
-mv $GOPATH/bin/ct_server ct_server/main
-mv $GOPATH/bin/trillian_log_server log_server/main
-mv $GOPATH/bin/trillian_log_signer log_signer/main
+compile github.com/google/trillian/server/trillian_log_server
+compile github.com/google/trillian/server/trillian_log_signer
+# Rename the compiled CT server to not conflict with the directory name
+compile github.com/google/trillian/examples/ct/ct_server "-o ct_server_main"
+compile github.com/google/trillian/cmd/createtree
+mv createtree ct_server/
+mv ct_server_main ct_server/main
+mv trillian_log_server log_server/main
+mv trillian_log_signer log_signer/main
 
 cd $COMPOSE_DIR/trampoline
 CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o trampoline trampoline.go
