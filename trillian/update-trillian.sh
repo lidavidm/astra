@@ -3,11 +3,13 @@
 
 set -e
 
+TRILLIAN_VERSION="486b2c10b9e62cfa12ee93e50fdc23d0288c3b19"
 COMPOSE_DIR=$(pwd)
 GOPATH=$(go env GOPATH)
 
 if [[ -e $GOPATH/src/github.com/google/trillian ]]; then
     cd $GOPATH/src/github.com/google/trillian
+    git checkout master
     git fetch
     if [[ "$(git rev-parse HEAD)" != "$(git rev-parse origin)" ]]; then
         # Fetch Trillian and its dependencies
@@ -25,6 +27,9 @@ else
     cd $GOPATH/src/github.com/google/trillian
     go get -d -t ./...
 fi
+
+printf "Checking out Trillian version $TRILLIAN_VERSION\n"
+git checkout $TRILLIAN_VERSION
 
 compile() {
     # Allow caller to provide optional arguments
