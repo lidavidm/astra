@@ -38,15 +38,15 @@ compile() {
 
 cd $GOPATH/src/github.com/google/trillian
 
+# Get dependencies
+printf "Getting dependencies\n"
+go get -d ./...
+
 # Copy over the SQL initialization
 cp storage/mysql/storage.sql $COMPOSE_DIR/db/01-init.sql
 # Prepend a directive to use the appropriate database
 sed -i '1iUSE trillian;' $COMPOSE_DIR/db/01-init.sql
 
-# patch Trillian to bind to 0.0.0.0, not localhost
-cd $GOPATH/src/github.com/google/trillian/server/trillian_log_server
-printf "Patching trillian\n"
-sed -i s/localhost/0.0.0.0/ main.go
 cd $GOPATH/src/github.com/google/trillian/server
 
 printf "Building trillian\n"
