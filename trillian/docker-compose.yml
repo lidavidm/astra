@@ -2,6 +2,14 @@ version: '2'
 networks:
   trillian: {}
 services:
+  etcd:
+    image: quay.io/coreos/etcd:v3.1.7
+    command: /usr/local/bin/etcd -advertise-client-urls http://0.0.0.0:2379 -listen-client-urls http://0.0.0.0:2379
+    networks:
+      - trillian
+    ports:
+      - "2379:2379"
+      - "4001:4001"
   db:
     build: db/
     image: db:db
@@ -18,12 +26,14 @@ services:
       - ./config:/config
     depends_on:
       - db
+      - etcd
   log_server:
     build: log_server
     image: log_server:log_server
     networks:
       - trillian
     ports:
+      - "8090:8090"
       - "8091:8091"
     volumes:
       - ./config:/config
